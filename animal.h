@@ -4,6 +4,7 @@
 #include "rand.h"
 #include "sea.h"
 
+
 class Animal
 {
 public:
