@@ -74,6 +74,6 @@ void MainWindow::startAnim()
 void MainWindow::setFishPos(int x, int y)
 {
 
-    listImage[x][y]->setPicture();
+    //listImage[x][y]->setPicture();
 }
 
