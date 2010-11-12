@@ -3,24 +3,25 @@
 
 #include "animal.h"
 
+#define SHARK 2
+
 class Shark : public Animal
 {
 public:
     Shark();
-    inline static void InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime) {
-        MAX_LIFE = maxLife;
-        REPRODUCTION_CYCLE = reproductionCycle;
-        DECAY_TIME = decayTime;
-        MATURE_TIME = matureTime;
-    }
+    Shark(int x, int y);
+    void Move();
+    void Procreate(int x, int y);
+    static void InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime);
     inline int MaxLife() {return MAX_LIFE;}
     inline int MatureTime() {return MATURE_TIME;}
     inline int Starvation() {return starvation;}
+    inline int GetType() {return SHARK;}
 
 private:
     void LookForFish();
 
-    unsigned int starvation;
+    int starvation;
 
     static int MAX_LIFE;
     static int REPRODUCTION_CYCLE;
