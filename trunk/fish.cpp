@@ -14,14 +14,18 @@ Fish::Fish() {
         this->posX = rand.next(Animal::sea->getWidth());
         this->posY = rand.next(Animal::sea->getHeight());
     }while(Animal::sea->Get(this->posX, this->posY) != NULL);
+
+    Animal::sea->Set(this->posX, this->posY, this);
 }
 
-Fish::Fish(Fish * parent) {
+Fish::Fish(int x, int y) {
     Rand rand = Rand();
     this->life = MAX_LIFE;
     this->reproduction = rand.next(REPRODUCTION_CYCLE);
-    this->posX = parent->getX();
-    this->posY = parent->getY();
+    this->posX = x;
+    this->posY = y;
+
+    Animal::sea->Set(this->posX, this->posY, this);
 }
 
 void Fish::InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime) {
@@ -68,11 +72,17 @@ void Fish::Move() {
         }
     }while((currentX != baseX || currentY != baseY) && !ok);
 
+    // management of procreation.
+    this->reproduction--;
     if(ok) {
-
+        if(reproduction < 1) {
+            this->Procreate(this->posX, this->posY);
+        }
+        Animal::sea->Move(this, this->posX + currentX - 1, this->posY + currentY - 1);
     }
 }
 
-void Fish::Procreate() {
-
+void Fish::Procreate(int x, int y) {
+    new Fish(x, y);
+    this->reproduction = REPRODUCTION_CYCLE;
 }
