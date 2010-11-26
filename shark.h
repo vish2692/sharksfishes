@@ -3,8 +3,6 @@
 
 #include "animal.h"
 
-#define SHARK 2
-
 class Shark : public Animal
 {
 public:

@@ -3,7 +3,6 @@
 
 #include "animal.h"
 
-#define FISH 1
 
 class Fish : public Animal
 {

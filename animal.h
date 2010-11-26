@@ -3,7 +3,7 @@
 
 #include "rand.h"
 #include "sea.h"
-
+#include "animals.h"
 
 class Animal
 {

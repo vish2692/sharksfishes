@@ -34,6 +34,8 @@ public:
     inline unsigned int getHeight() {return height;}
     void Move(Animal * animal, int x, int y);
     void Delete(Animal * animal);
+
+    inline unsigned int getSimulationTurns(){ return this->simulation_turns ; }
 };
 
 #endif // SEA_H

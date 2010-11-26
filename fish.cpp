@@ -1,4 +1,5 @@
 #include "fish.h"
+#include <QDebug>
 
 int Fish::MAX_LIFE;
 int Fish::REPRODUCTION_CYCLE;
@@ -6,19 +7,26 @@ int Fish::DECAY_TIME;
 int Fish::MATURE_TIME;
 
 Fish::Fish() {
+    qDebug() << "Creating fish" ;
     Rand rand = Rand();
     this->life = MAX_LIFE - rand.next(MAX_LIFE);
+    qDebug() << "Rand1" ;
     this->reproduction = rand.next(REPRODUCTION_CYCLE);
+    qDebug() << "Rand2" ;
 
     do {
         this->posX = rand.next(Animal::sea->getWidth());
         this->posY = rand.next(Animal::sea->getHeight());
+        qDebug() << "Rand pos" ;
     }while(Animal::sea->Get(this->posX, this->posY) != NULL);
 
     Animal::sea->Set(this->posX, this->posY, this);
+    qDebug() << "End - Creating fish" ;
 }
 
 Fish::Fish(int x, int y) {
+
+    qDebug() << "Creating fish" ;
     Rand rand = Rand();
     this->life = MAX_LIFE;
     this->reproduction = rand.next(REPRODUCTION_CYCLE);
@@ -26,6 +34,7 @@ Fish::Fish(int x, int y) {
     this->posY = y;
 
     Animal::sea->Set(this->posX, this->posY, this);
+    qDebug() << "End - Creating fish" ;
 }
 
 void Fish::InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime) {
@@ -85,4 +94,5 @@ void Fish::Move() {
 void Fish::Procreate(int x, int y) {
     new Fish(x, y);
     this->reproduction = REPRODUCTION_CYCLE;
+    qDebug() << "Shark Procreation" ;
 }
