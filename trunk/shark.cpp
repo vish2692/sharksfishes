@@ -1,5 +1,6 @@
 #include "shark.h"
 #include "fish.h"
+#include <QDebug>
 
 int Shark::MAX_LIFE;
 int Shark::REPRODUCTION_CYCLE;
@@ -110,4 +111,5 @@ void Shark::Move() {
 void Shark::Procreate(int x, int y) {
     new Shark(x, y);
     this->reproduction = REPRODUCTION_CYCLE;
+    qDebug() << "Shark Procreation" ;
 }

@@ -2,15 +2,28 @@
 #include "animal.h"
 #include "fish.h"
 #include "shark.h"
+#include <QDebug>
 
 Sea::Sea() {
     this->Configure(100, 100, 1000, 10, 10);
     this->garbage = QVector<Animal *>();
+
+    this->grid = new Animal**[this->height];
+    for(int i=0; i<this->height ;i++)
+    {
+        this->grid[i] = new Animal*[this->width];
+    }
 }
 
 Sea::Sea(unsigned int width, unsigned int height, unsigned int simulation_turns, unsigned int starting_fishes, unsigned int starting_sharks) {
     this->Configure(width, height, simulation_turns, starting_fishes, starting_sharks);
     this->garbage = QVector<Animal *>();
+
+    this->grid = new Animal**[this->height];
+    for(int i=0; i<this->height ;i++)
+    {
+        this->grid[i] = new Animal*[this->width];
+    }
 }
 
 void Sea::Init() {
@@ -28,10 +41,12 @@ void Sea::Configure(unsigned int width, unsigned int height, unsigned int simula
 
 void Sea::Populate() {
     unsigned int i;
+    qDebug() << "Start - Populate Sea" ;
     for(i = 0; i < this->starting_fishes; i++)
         new Fish();
     for(i = 0; i < this->starting_sharks; i++)
         new Shark();
+    qDebug() << "End - Populate Sea" ;
 }
 
 Animal * Sea::Get(int x, int y) {
@@ -43,6 +58,7 @@ Animal * Sea::Get(int x, int y) {
 void Sea::Delete(Animal *animal) {
     this->Set(animal->getX(), animal->getY(), NULL);
     this->garbage.push_back(animal);
+    qDebug() << "Delete animal" ;
 }
 
 void Sea::Clean() {
