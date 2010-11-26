@@ -22,7 +22,8 @@ HEADERS += mainwindow.h \
     rand.h \
     optionwindow.h \
     simulation.h \
-    animals.h
+    animals.h \
+    randexception.h
 FORMS += mainwindow.ui \
     options.ui
 RESOURCES += ressources.qrc
