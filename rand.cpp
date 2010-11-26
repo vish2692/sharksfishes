@@ -5,12 +5,12 @@ Rand::Rand()
     srand(time(NULL));
 }
 
-int Rand::next(int max) throw RandException {
-    if(max == 0) throw new RandException("Invalid max : 0");
+int Rand::next(int max) {
+    if(max < 1) return 0 ;
     return rand() % max;
 }
 
-int Rand::next(int min, int max) throw RandException {
-    if((max - min) == 0) throw new RandException("Invalid parameters : max = min");
+int Rand::next(int min, int max) {
+    if((max-min) < 1) return 0 ;
     return rand() % (max-min) + min;
 }

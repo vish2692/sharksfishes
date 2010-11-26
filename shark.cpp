@@ -20,6 +20,7 @@ Shark::Shark() {
     }while(Animal::sea->Get(this->posX, this->posY) != NULL);
 
     Animal::sea->Set(this->posX, this->posY, this);
+    qDebug() << "Shark created" ;
 }
 
 Shark::Shark(int x, int y) {
@@ -31,18 +32,22 @@ Shark::Shark(int x, int y) {
     this->posY = y;
 
     Animal::sea->Set(this->posX, this->posY, this);
+    qDebug() << "Shark created at pos "<< this->posX << " " << this->posY ;
 }
 
-void Shark::InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime) {
+void Shark::InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime, int starvationTime) {
     MAX_LIFE = maxLife;
     REPRODUCTION_CYCLE = reproductionCycle;
     DECAY_TIME = decayTime;
     MATURE_TIME = matureTime;
+    STARVATION_TIME = starvationTime ;
 }
 
 void Shark::Move() {
     //Life left :
-    if(--life < 1) {
+    if(--life < 1)
+    {
+        qDebug() << "A shark died pos "<< this->posX << " " << this->posY ;
         if(life + DECAY_TIME < 0) {
             Animal::sea->Delete(this);
         }
@@ -62,6 +67,8 @@ void Shark::Move() {
     int okY = this->posY;
     bool ok = false;
     bool eat = false;
+    int checkedCell = 0 ;
+
     Animal * target = NULL;
     do {
         target = Animal::sea->Get(this->posX + currentX - 1, this->posY + currentY - 1);
@@ -88,7 +95,8 @@ void Shark::Move() {
                 currentY = 0;
             }
         }
-    }while((currentX != baseX || currentY != baseY) && !eat);
+        checkedCell++ ;
+    }while((currentX != baseX || currentY != baseY) && !eat && checkedCell < 8);
 
     // management of procreation and starvation.
     this->reproduction--;
@@ -111,5 +119,4 @@ void Shark::Move() {
 void Shark::Procreate(int x, int y) {
     new Shark(x, y);
     this->reproduction = REPRODUCTION_CYCLE;
-    qDebug() << "Shark Procreation" ;
 }

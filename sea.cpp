@@ -8,10 +8,12 @@ Sea::Sea() {
     this->Configure(100, 100, 1000, 10, 10);
     this->garbage = QVector<Animal *>();
 
-    this->grid = new Animal**[this->height];
-    for(int i=0; i<this->height ;i++)
+    this->grid = new Animal**[this->width];
+    for(int i=0; i<this->width ;i++)
     {
-        this->grid[i] = new Animal*[this->width];
+        this->grid[i] = new Animal*[this->height];
+        for(int j=0 ; j<this->height ; j++)
+            this->grid[i][j] = NULL ;
     }
 }
 
@@ -19,10 +21,12 @@ Sea::Sea(unsigned int width, unsigned int height, unsigned int simulation_turns,
     this->Configure(width, height, simulation_turns, starting_fishes, starting_sharks);
     this->garbage = QVector<Animal *>();
 
-    this->grid = new Animal**[this->height];
-    for(int i=0; i<this->height ;i++)
+    this->grid = new Animal**[this->width];
+    for(int i=0; i<this->width ;i++)
     {
-        this->grid[i] = new Animal*[this->width];
+        this->grid[i] = new Animal*[this->height];
+        for(int j=0 ; j<this->height ; j++)
+            this->grid[i][j] = NULL ;
     }
 }
 
@@ -52,7 +56,8 @@ void Sea::Populate() {
 Animal * Sea::Get(int x, int y) {
     // if x < 0, we get the position from the other side of the grid.
     // same for y
-    return this->grid[(x < 0 ? this->width - x : x)][(y < 0 ? this->height - y : y)];
+    //qDebug() << x <<  " " << this->width << " " << this->height << " x : " << (x < 0 ? this->width - x : (x >= this->width ? x % this->width : x)) << " y : "<<(y < 0 ? this->height - y : (y >= this->height ? y % this->height: y));
+    return this->grid[(x < 0 ? this->width + x : (x >= this->width ? x % this->width : x))][(y < 0 ? this->height + y : (y >= this->height ? y % this->height: y))];
 }
 
 void Sea::Delete(Animal *animal) {
@@ -72,8 +77,8 @@ void Sea::Clean() {
 
 void Sea::Move(Animal *animal, int x, int y) {
     this->Set(animal->getX(), animal->getY(), NULL);
-    int posX = (x < 0 ? this->width - x : x);
-    int posY = (y < 0 ? this->height - y : y);
+    int posX = (x < 0 ? this->width + x : (x >= this->width ? x % this->width : x));
+    int posY = (y < 0 ? this->height + y : (y >= this->height ? y % this->height: y));
     this->Set(posX, posY, animal);
     animal->setX(posX);
     animal->setY(posY);

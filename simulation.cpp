@@ -29,24 +29,28 @@ void Simulation::runSimulation()
     for(currentTurn=0; currentTurn< this->seaSimulation->getSimulationTurns() ; currentTurn++)
     {
         qDebug() << "Turn " << currentTurn ;
-        qDebug() << "Sharks" ;
+        qDebug() << "Sharks turn" ;
+
         // Shark turns
         for(x=0 ; x<this->seaSimulation->getWidth() ; x++)
         {
             for(y=0 ; y<this->seaSimulation->getHeight() ; y++)
             {
-                qDebug() << "x : " << x << " - y : " << y ;
                 currentAnimal = this->seaSimulation->Get(x, y) ;
 
-                // if it's a fish
-                if(currentAnimal != NULL && currentAnimal->GetType() == SHARK)
+                // if it's a shark
+                if(currentAnimal != NULL)
                 {
-                    currentAnimal->Move();
+                    if(currentAnimal->GetType() == SHARK)
+                    {
+                        qDebug() << "Move shark at "<< currentAnimal->getX() << " " << currentAnimal->getY() ;
+                        currentAnimal->Move();
+                    }
                 }
             }
         }
 
-        qDebug() << "Fishes" ;
+        qDebug() << "Fishes turn" ;
         // Fishes turns
         for(x=0 ; x<this->seaSimulation->getWidth() ; x++)
         {

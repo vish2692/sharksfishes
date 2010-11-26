@@ -10,7 +10,7 @@ public:
     Shark(int x, int y);
     void Move();
     void Procreate(int x, int y);
-    static void InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime);
+    static void InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime, int starvationTime);
     inline int MaxLife() {return MAX_LIFE;}
     inline int MatureTime() {return MATURE_TIME;}
     inline int Starvation() {return starvation;}
