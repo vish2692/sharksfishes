@@ -106,13 +106,14 @@ void Shark::Move() {
             this->Procreate(this->posX, this->posY);
         }
         if(eat) {
-            Animal::sea->Delete(target);
+            ((Fish*)target)->Eaten();
             this->starvation = this->STARVATION_TIME;
         }
         Animal::sea->Move(this, this->posX + currentX - 1, this->posY + currentY - 1);
     }
     if(starvation < 0) {
-        Animal::sea->Delete(this);
+        qDebug() << "Shark starves" ;
+        life = 0 ;
     }
 }
 

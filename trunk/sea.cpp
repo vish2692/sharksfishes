@@ -9,10 +9,10 @@ Sea::Sea() {
     this->garbage = QVector<Animal *>();
 
     this->grid = new Animal**[this->width];
-    for(int i=0; i<this->width ;i++)
+    for(unsigned int i=0; i<this->width ;i++)
     {
         this->grid[i] = new Animal*[this->height];
-        for(int j=0 ; j<this->height ; j++)
+        for(unsigned int j=0 ; j<this->height ; j++)
             this->grid[i][j] = NULL ;
     }
 }
@@ -22,10 +22,10 @@ Sea::Sea(unsigned int width, unsigned int height, unsigned int simulation_turns,
     this->garbage = QVector<Animal *>();
 
     this->grid = new Animal**[this->width];
-    for(int i=0; i<this->width ;i++)
+    for(unsigned int i=0; i<this->width ;i++)
     {
         this->grid[i] = new Animal*[this->height];
-        for(int j=0 ; j<this->height ; j++)
+        for(unsigned int j=0 ; j<this->height ; j++)
             this->grid[i][j] = NULL ;
     }
 }
@@ -38,7 +38,6 @@ void Sea::Configure(unsigned int width, unsigned int height, unsigned int simula
     this->width = width;
     this->height = height;
     this->simulation_turns = simulation_turns;
-    this->turns_left = simulation_turns;
     this->starting_fishes = starting_fishes;
     this->starting_sharks = starting_sharks;
 }
@@ -60,18 +59,21 @@ Animal * Sea::Get(int x, int y) {
     return this->grid[(x < 0 ? this->width + x : (x >= this->width ? x % this->width : x))][(y < 0 ? this->height + y : (y >= this->height ? y % this->height: y))];
 }
 
+void Sea::Set(int x, int y, Animal * animal) {
+    this->grid[x][y] = animal;
+}
+
 void Sea::Delete(Animal *animal) {
     this->Set(animal->getX(), animal->getY(), NULL);
     this->garbage.push_back(animal);
-    qDebug() << "Delete animal" ;
 }
 
 void Sea::Clean() {
-    Animal * current = this->garbage.first();
-    while(current != NULL) {
+    while(!this->garbage.isEmpty())
+    {
+        Animal * current = this->garbage.first();
         this->garbage.pop_front();
         delete current;
-        current = this->garbage.first();
     }
 }
 
