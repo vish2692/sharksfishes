@@ -2,7 +2,7 @@
 #define RANDEXCEPTION_H
 
 #include <string>
-#include <exception>;
+#include <exception>
 
 class RandException : public exception
 {
