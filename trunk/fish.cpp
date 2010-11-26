@@ -7,26 +7,21 @@ int Fish::DECAY_TIME;
 int Fish::MATURE_TIME;
 
 Fish::Fish() {
-    qDebug() << "Creating fish" ;
     Rand rand = Rand();
+
     this->life = MAX_LIFE - rand.next(MAX_LIFE);
-    qDebug() << "Rand1" ;
     this->reproduction = rand.next(REPRODUCTION_CYCLE);
-    qDebug() << "Rand2" ;
 
     do {
         this->posX = rand.next(Animal::sea->getWidth());
         this->posY = rand.next(Animal::sea->getHeight());
-        qDebug() << "Rand pos" ;
     }while(Animal::sea->Get(this->posX, this->posY) != NULL);
 
     Animal::sea->Set(this->posX, this->posY, this);
-    qDebug() << "End - Creating fish" ;
+    qDebug() << "Fish created" ;
 }
 
 Fish::Fish(int x, int y) {
-
-    qDebug() << "Creating fish" ;
     Rand rand = Rand();
     this->life = MAX_LIFE;
     this->reproduction = rand.next(REPRODUCTION_CYCLE);
@@ -34,7 +29,7 @@ Fish::Fish(int x, int y) {
     this->posY = y;
 
     Animal::sea->Set(this->posX, this->posY, this);
-    qDebug() << "End - Creating fish" ;
+    qDebug() << "Fish created at pos "<< this->posX << " " << this->posY ;
 }
 
 void Fish::InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime) {
@@ -46,7 +41,9 @@ void Fish::InitVars(int maxLife, int reproductionCycle, int decayTime, int matur
 
 void Fish::Move() {
     //Life left :
-    if(--life < 1) {
+    if(--life < 1)
+    {
+        qDebug() << "A fish died pos "<< this->posX << " " << this->posY ;
         if(life + DECAY_TIME < 0) {
             Animal::sea->Delete(this);
         }
@@ -63,6 +60,8 @@ void Fish::Move() {
     int currentX = baseX;
     int currentY = baseY;
     bool ok = false;
+    int checkedCell = 0 ;
+
     do {
         if(Animal::sea->Get(this->posX + currentX - 1, this->posY + currentY - 1) == NULL) {
             ok = true;
@@ -79,7 +78,8 @@ void Fish::Move() {
                 currentY = 0;
             }
         }
-    }while((currentX != baseX || currentY != baseY) && !ok);
+        checkedCell++ ;
+    }while((currentX != baseX || currentY != baseY) && !ok && checkedCell < 8);
 
     // management of procreation.
     this->reproduction--;
@@ -94,5 +94,4 @@ void Fish::Move() {
 void Fish::Procreate(int x, int y) {
     new Fish(x, y);
     this->reproduction = REPRODUCTION_CYCLE;
-    qDebug() << "Shark Procreation" ;
 }
