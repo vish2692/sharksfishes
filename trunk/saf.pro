@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     rand.cpp \
     animal.cpp \
     optionwindow.cpp \
-    simulation.cpp
+    simulation.cpp \
+    qmylabel.cpp
 HEADERS += mainwindow.h \
     animal.h \
     shark.h \
@@ -22,7 +23,8 @@ HEADERS += mainwindow.h \
     rand.h \
     optionwindow.h \
     simulation.h \
-    animals.h
+    animals.h \
+    qmylabel.h
 FORMS += mainwindow.ui \
     options.ui
 RESOURCES += ressources.qrc

@@ -11,6 +11,7 @@ namespace Ui {
     class MainWindow;
 }
 
+class QMyLabel;
 class optionWindow;
 
 class MainWindow : public QMainWindow
@@ -36,6 +37,9 @@ public:
     inline int getNbTurnBeforeStarvationSharks(){return m_nbTurnBeforeStarvationSharks;}
 
     void setFishPos(int x, int y);
+    void setSharkPos(int x, int y);
+
+    void resizeEvent(QResizeEvent *);
 
 public slots:
     void startAnim();
@@ -55,7 +59,7 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    QVector< QVector<QLabel *> > listImage;
+    QVector< QVector<QMyLabel *> > listImage;
     QMenu *fileMenu;
     QAction *startAnimation;
     QMenu *optionMenu;
@@ -77,10 +81,25 @@ private:
     int m_nbTurnBeforeDecayFishes;
     int m_nbTurnBeforeStarvationSharks;
 
-    QPicture *fishPic;
-    QPicture *sharkPic;
-    QPicture *fishBabyPic;
-    QPicture *sharkBabyPic;
+    QPixmap *m_fishPix;
+    QPixmap *m_sharkPix;
+    QPixmap *m_fishBabyPix;
+    QPixmap *m_sharkBabyPix;
+
+    QPixmap *m_fishPix_original;
+    QPixmap *m_sharkPix_original;
+    QPixmap *m_fishBabyPix_original;
+    QPixmap *m_sharkBabyPix_original;
+
+    QGraphicsScene *m_sceneG;
+    QGraphicsView *m_viewG;
+    QGraphicsGridLayout *m_gridLayoutG;
+
+
+    int m_rowSize;
+    int m_columnSize;
+
+    bool m_launched;
 
 private slots:
 

@@ -3,5 +3,7 @@
         <file>sea.jpg</file>
         <file>sea2.png</file>
         <file>background.png</file>
+        <file>fish.png</file>
+        <file>shark.png</file>
     </qresource>
 </RCC>
