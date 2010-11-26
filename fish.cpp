@@ -23,6 +23,7 @@ Fish::Fish() {
 
 Fish::Fish(int x, int y) {
     Rand rand = Rand();
+
     this->life = MAX_LIFE;
     this->reproduction = rand.next(REPRODUCTION_CYCLE);
     this->posX = x;
@@ -37,6 +38,11 @@ void Fish::InitVars(int maxLife, int reproductionCycle, int decayTime, int matur
     REPRODUCTION_CYCLE = reproductionCycle;
     DECAY_TIME = decayTime;
     MATURE_TIME = matureTime;
+}
+
+void Fish::Eaten() {
+    Animal::sea->Delete(this);
+    qDebug() << "Fish eaten : " << this->getX() << " " << this->getY() ;
 }
 
 void Fish::Move() {

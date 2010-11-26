@@ -10,7 +10,7 @@ public:
 
     Fish();
     Fish(int x, int y);
-    inline void Eaten() {this->life = 0;}
+    void Eaten();
     void Move();
     void Procreate(int x, int y);
     static void InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime);
