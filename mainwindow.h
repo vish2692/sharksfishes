@@ -6,6 +6,7 @@
 #include <QtGui>
 #include <QApplication>
 #include "sea.h"
+#include "simulation.h"
 
 namespace Ui {
     class MainWindow;
@@ -38,7 +39,7 @@ public:
 
     void setFishPos(int x, int y);
     void setSharkPos(int x, int y);
-
+    void setNothingPos(int x, int y);
     void resizeEvent(QResizeEvent *);
 
 public slots:
@@ -57,6 +58,8 @@ public slots:
     inline void setNbTurnBeforeDecayFishes(int p_val){m_nbTurnBeforeDecayFishes = p_val;}
     inline void setNbTurnBeforeStarvationSharks(int p_val){m_nbTurnBeforeStarvationSharks = p_val;}
 
+    void updateGrid();
+
 private:
     Ui::MainWindow *ui;
     QVector< QVector<QMyLabel *> > listImage;
@@ -65,6 +68,7 @@ private:
     QMenu *optionMenu;
     QAction *preferences;
     Sea *actualSea;
+    Simulation *m_simulation;
     optionWindow *optionW;
 
     /*Options variables.*/
@@ -100,6 +104,8 @@ private:
     int m_columnSize;
 
     bool m_launched;
+
+    QTimer *m_timeRefresh;
 
 private slots:
 
