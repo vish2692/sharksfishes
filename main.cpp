@@ -11,12 +11,13 @@ int main(int argc, char *argv[])
 //    QApplication a(argc, argv);
 //    MainWindow w;
 //    return a.exec();
-    Fish::InitVars(100, 20, 5, 10);
-    Shark::InitVars(100, 20, 5, 10, 50);
 
+    // int maxLife, int reproductionCycle, int decayTime, int matureTime, int starvationTime
+    Fish::InitVars(100, 30, 5, 10);
+    Shark::InitVars(100, 30, 5, 10, 30);
+
+    // int width, int height, int simulation_turns, int starting_fishes, int starting_sharks
     Sea * s = new Sea(10, 10, 1000, 50, 20);
-    //s->Init();
-    //s->Populate();
 
     Simulation * sim = new Simulation(s);
     sim->runSimulation();

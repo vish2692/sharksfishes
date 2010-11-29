@@ -10,9 +10,9 @@ int Shark::STARVATION_TIME;
 
 Shark::Shark() {
     Rand rand = Rand();
-    this->life = MAX_LIFE - rand.next(MAX_LIFE);
-    this->reproduction = rand.next(REPRODUCTION_CYCLE);
-    this->starvation = rand.next(STARVATION_TIME);
+    this->life = MAX_LIFE - rand.next(Shark::MAX_LIFE);
+    this->reproduction = rand.next(Shark::REPRODUCTION_CYCLE);
+    this->starvation = rand.next(Shark::STARVATION_TIME);
 
     do {
         this->posX = rand.next(Animal::sea->getWidth());
@@ -20,35 +20,35 @@ Shark::Shark() {
     }while(Animal::sea->Get(this->posX, this->posY) != NULL);
 
     Animal::sea->Set(this->posX, this->posY, this);
-    qDebug() << "Shark created" ;
+    //qDebug() << "Shark created" ;
 }
 
 Shark::Shark(int x, int y) {
     Rand rand = Rand();
-    this->life = MAX_LIFE;
-    this->reproduction = rand.next(REPRODUCTION_CYCLE);
-    this->starvation = rand.next(STARVATION_TIME);
+    this->life = Shark::MAX_LIFE;
+    this->reproduction = Shark::REPRODUCTION_CYCLE+Shark::MATURE_TIME;
+    this->starvation = Shark::STARVATION_TIME;
     this->posX = x;
     this->posY = y;
-
     Animal::sea->Set(this->posX, this->posY, this);
     qDebug() << "Shark created at pos "<< this->posX << " " << this->posY ;
 }
 
 void Shark::InitVars(int maxLife, int reproductionCycle, int decayTime, int matureTime, int starvationTime) {
-    MAX_LIFE = maxLife;
-    REPRODUCTION_CYCLE = reproductionCycle;
-    DECAY_TIME = decayTime;
-    MATURE_TIME = matureTime;
-    STARVATION_TIME = starvationTime ;
+    Shark::MAX_LIFE = maxLife;
+    Shark::REPRODUCTION_CYCLE = reproductionCycle;
+    Shark::DECAY_TIME = decayTime;
+    Shark::MATURE_TIME = matureTime;
+    Shark::STARVATION_TIME = starvationTime ;
 }
 
 void Shark::Move() {
     //Life left :
     if(--life < 1)
     {
-        qDebug() << "A shark died pos "<< this->posX << " " << this->posY ;
-        if(life + DECAY_TIME < 0) {
+        if(life == 0)
+            qDebug() << "A shark died pos "<< this->posX << " " << this->posY ;
+        if(life + Shark::DECAY_TIME < 0) {
             Animal::sea->Delete(this);
         }
         return;
@@ -61,6 +61,7 @@ void Shark::Move() {
         baseX = rand.next(3);
         baseY = rand.next(3);
     }
+    //qDebug() << baseX << " " << baseY ;
     int currentX = baseX;
     int currentY = baseY;
     int okX = this->posX;
@@ -102,22 +103,27 @@ void Shark::Move() {
     this->reproduction--;
     this->starvation--;
     if(ok) {
-        if(reproduction < 1) {
-            this->Procreate(this->posX, this->posY);
-        }
         if(eat) {
             ((Fish*)target)->Eaten();
-            this->starvation = this->STARVATION_TIME;
+            this->starvation = Shark::STARVATION_TIME;
         }
+
+        int x_reproduction = this->posX ;
+        int y_reproduction = this->posY ;
+
         Animal::sea->Move(this, this->posX + currentX - 1, this->posY + currentY - 1);
+
+        if(this->reproduction < 1) {
+            this->Procreate(x_reproduction, y_reproduction);
+        }
     }
     if(starvation < 0) {
-        qDebug() << "Shark starves" ;
+        qDebug() << "Shark starves pos " << this->posX << " " << this->posY ;
         life = 0 ;
     }
 }
 
 void Shark::Procreate(int x, int y) {
     new Shark(x, y);
-    this->reproduction = REPRODUCTION_CYCLE;
+    this->reproduction = Shark::REPRODUCTION_CYCLE;
 }

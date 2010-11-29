@@ -2,6 +2,7 @@
 #define SHARK_H
 
 #include "animal.h"
+#include "sea.h"
 
 class Shark : public Animal
 {

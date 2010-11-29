@@ -18,7 +18,7 @@ Fish::Fish() {
     }while(Animal::sea->Get(this->posX, this->posY) != NULL);
 
     Animal::sea->Set(this->posX, this->posY, this);
-    qDebug() << "Fish created" ;
+    //qDebug() << "Fish created" ;
 }
 
 Fish::Fish(int x, int y) {
@@ -90,10 +90,14 @@ void Fish::Move() {
     // management of procreation.
     this->reproduction--;
     if(ok) {
-        if(reproduction < 1) {
-            this->Procreate(this->posX, this->posY);
-        }
+        int x_reproduction = this->posX ;
+        int y_reproduction = this->posY ;
+
         Animal::sea->Move(this, this->posX + currentX - 1, this->posY + currentY - 1);
+
+        if(reproduction < 1) {
+            this->Procreate(x_reproduction, y_reproduction);
+        }
     }
 }
 

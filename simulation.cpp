@@ -2,10 +2,9 @@
 #include "animal.h"
 #include "shark.h"
 #include "fish.h"
+#include "statistic.h"
 #include <QDebug>
 #include <QList>
-#include <QFile>
-#include <QTextStream>
 
 Simulation::Simulation(Sea * seaSimulation)
 {
@@ -24,12 +23,6 @@ void Simulation::run()
 
 void Simulation::runSimulation()
 {
-    QFile stats("Statistiques");
-    if (!stats.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "Impossible d'ouvrir le fichier de statistiques.";
-        return;
-    }
-    QTextStream out(&stats);
     unsigned int currentTurn=0 ;
     unsigned int x=0 ;
     unsigned int y=0 ;
@@ -37,8 +30,10 @@ void Simulation::runSimulation()
     unsigned int currentSharksNumber = 0 ;
     unsigned int currentFishesNumber = 0 ;
 
+    // Statistic's variables
     unsigned int turnStartingSharksNumber = 0 ;
     unsigned int turnStartingFishesNumber = 0 ;
+    statistic statisticFile = statistic(this->seaSimulation->getSimulationTurns()) ;
 
     Animal * currentAnimal ;
 
@@ -46,12 +41,13 @@ void Simulation::runSimulation()
     this->seaSimulation->Populate();
 
     qDebug() << "Start Simulation" ;
+
     // Loop for the turns
     for(currentTurn=0; currentTurn< this->seaSimulation->getSimulationTurns() ; currentTurn++)
     {
         turnStartingSharksNumber = 0;
         turnStartingFishesNumber = 0;
-        // Recuperation of all the sharks
+        // Recuperation of all the sharks and all the fishes
         QList<Shark *> sharksToMove = QList<Shark *>() ;
         for(x=0 ; x<this->seaSimulation->getWidth() ; x++)
         {
@@ -59,21 +55,18 @@ void Simulation::runSimulation()
             {
                 currentAnimal = this->seaSimulation->Get(x, y) ;
 
-                if(currentAnimal != NULL) {
+                if(currentAnimal != NULL)
+                {
                     if(currentAnimal->GetType() == SHARK) {
                         sharksToMove.append((Shark*)currentAnimal);
                         turnStartingSharksNumber++;
                     }
-                    else
+                    else if(currentAnimal->GetType() == FISH)
                         turnStartingFishesNumber++;
                 }
             }
         }
         currentSharksNumber = sharksToMove.length() ;
-
-        qDebug() << "Starting Sharks : " << turnStartingSharksNumber;
-        qDebug() << "Starting Fishes : " << turnStartingFishesNumber;
-        out << "Sharks : " << turnStartingSharksNumber << " Fishes : " << turnStartingFishesNumber << endl;
 
         // Shark turns
         qDebug() << "Sharks turn to move : " << currentSharksNumber ;
@@ -83,7 +76,7 @@ void Simulation::runSimulation()
             currentAnimal->Move();
         }
 
-        // Recuperation of all the fishes
+        // Recuperation of all the fishes (some could have been eaten by the sharks)
         QList<Fish *> fishesToMove = QList<Fish *>() ;
         for(x=0 ; x<this->seaSimulation->getWidth() ; x++)
         {
@@ -107,6 +100,12 @@ void Simulation::runSimulation()
         }
         this->seaSimulation->Clean();
 
+
+        // Statistics we save the number of sharks and the number of fishes for each turn
+        statisticFile.addTurn(turnStartingSharksNumber, turnStartingFishesNumber);
+
+
+        // If there is no more animals we stop the simulation
         if(currentSharksNumber == 0 && currentFishesNumber == 0 )
         {
             qDebug() << "No more animals, simulation stopped at turn "<<currentTurn ;
