@@ -22,10 +22,22 @@ MainWindow::MainWindow(QWidget *parent) :
     fileMenu = menuBar()->addMenu("File");
     startAnimation = new QAction("Start simulation", this);
     fileMenu->addAction(startAnimation);
+    startAnimation->setIcon(QIcon(":/images/run.png"));
 
     optionMenu = menuBar()->addMenu("Option");
     preferences = new QAction("Preferences", this);
+    preferences->setIcon(QIcon(":/images/preferences.png"));
     optionMenu->addAction(preferences);
+
+    QAction *goStat = new QAction("Open statistic", this);
+    goStat->setIcon(QIcon(":/images/stat_button.png"));
+    optionMenu->addAction(goStat);
+
+    QToolBar *toolBarFichier = ui->mainToolBar;
+    toolBarFichier->addAction(startAnimation);
+    toolBarFichier->addAction(preferences);
+    toolBarFichier->addAction(goStat);
+
 
     m_fishPix = new QPixmap(":/images/fish.png");
     m_sharkPix= new QPixmap(":/images/shark.png");
@@ -46,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_gridWidth = 20;
     m_gridHeight = 20;
-    m_nbTurn = 20;
+    m_nbTurn = 100;
     m_nbStartSharks = 20;
     m_nbStartFishes = 50;
     m_nbMaxLifeSharks = 40;
@@ -63,7 +75,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_gridLayoutG = new QGraphicsGridLayout();
     m_gridLayoutG->setHorizontalSpacing(0);
     m_gridLayoutG->setVerticalSpacing(0);
-    setCentralWidget(m_viewG);
+    m_mdi = new QMdiArea(this);
+    m_mdi->setViewMode(QMdiArea::TabbedView);
+    QMdiSubWindow *subSimu = m_mdi->addSubWindow(m_viewG);
+    subSimu->setWindowState(Qt::WindowMaximized);
+    subSimu->setWindowTitle("Simulation");
+
+    setCentralWidget(m_mdi);
 
     m_columnSize = (frameGeometry().width() - WIDTH_MARGIN) / m_gridWidth;
     m_rowSize = (frameGeometry().height() - HEIGHT_MARGIN) / m_gridHeight;
@@ -125,7 +143,7 @@ void MainWindow::showOptions()
 void MainWindow::startAnim()
 {
     /*Set a background image.*/
-    setStyleSheet("QMainWindow{background-image: url(:/images/background.png)}");
+    //setStyleSheet("QMainWindow{background-image: url(:/images/background.png)}");
 
     /*Create the sea object.*/
     Fish::InitVars(m_nbMaxLifeFishes, m_nbTurnBetweenProcFishes, m_nbTurnBeforeDecayFishes, 10);
@@ -192,7 +210,6 @@ void MainWindow::startAnim()
             {
                 setSharkPos(iPos,iPos2);
             }
-
         }
     }
 
@@ -201,29 +218,31 @@ void MainWindow::startAnim()
     m_timeRefresh = new QTimer(this);
     m_timeRefresh->setInterval(1000);
     connect(m_timeRefresh, SIGNAL(timeout()), this, SLOT(updateGrid()));
-    m_simulation->runSimulation();
+    m_simulation->start();
     m_timeRefresh->start();
 }
 
 void MainWindow::updateGrid()
 {
-    qDebug() << "updateGrid !";
-    for(int iWidthPos = 0; iWidthPos < m_gridWidth; iWidthPos++)
+    if(m_simulation->GetSimuState() == true)    //Simulation is running.
     {
-        for(int iHeightPos = 0; iHeightPos < m_gridHeight; iHeightPos++)
+        for(int iWidthPos = 0; iWidthPos < m_gridWidth; iWidthPos++)
         {
-            Animal *localAnimal = actualSea->Get(iWidthPos, iHeightPos);
-            if(localAnimal == NULL)  //Nothing to display
+            for(int iHeightPos = 0; iHeightPos < m_gridHeight; iHeightPos++)
             {
-                setNothingPos(iWidthPos,iHeightPos);
-            }
-            else if(localAnimal->GetType() == SHARK)
-            {
-                setSharkPos(iWidthPos,iHeightPos);
-            }
-            else if(localAnimal->GetType() == FISH)
-            {
-                setFishPos(iWidthPos,iHeightPos);
+                Animal *localAnimal = actualSea->Get(iWidthPos, iHeightPos);
+                if(localAnimal == NULL)  //Nothing to display
+                {
+                    setNothingPos(iWidthPos,iHeightPos);
+                }
+                else if(localAnimal->GetType() == SHARK)
+                {
+                    setSharkPos(iWidthPos,iHeightPos);
+                }
+                else if(localAnimal->GetType() == FISH)
+                {
+                    setFishPos(iWidthPos,iHeightPos);
+                }
             }
         }
     }
@@ -231,7 +250,8 @@ void MainWindow::updateGrid()
 
 void MainWindow::setNothingPos(int x, int y)
 {
-    listImage[x][y]->setPixmap(NULL);
+    //listImage[x][y]->setPixmap(QPixmap());
+     listImage[x][y]->clear();
 }
 
 void MainWindow::setFishPos(int x, int y)

@@ -9,6 +9,8 @@
 Simulation::Simulation(Sea * seaSimulation)
 {
     this->seaSimulation = seaSimulation ;
+    m_stat = new statistic(seaSimulation->getSimulationTurns());
+    m_simuIsRun = false;
 }
 
 void Simulation::run()
@@ -17,7 +19,7 @@ void Simulation::run()
     runSimulation();
 
     // Sleep between turns
-    QThread::msleep(1000);
+    //QThread::msleep(1000);
 
 }
 
@@ -33,7 +35,7 @@ void Simulation::runSimulation()
     // Statistic's variables
     unsigned int turnStartingSharksNumber = 0 ;
     unsigned int turnStartingFishesNumber = 0 ;
-    statistic statisticFile = statistic(this->seaSimulation->getSimulationTurns()) ;
+    //statistic statisticFile = statistic(this->seaSimulation->getSimulationTurns()) ;
 
     Animal * currentAnimal ;
 
@@ -41,10 +43,11 @@ void Simulation::runSimulation()
     this->seaSimulation->Populate();
 
     qDebug() << "Start Simulation" ;
-
+    m_simuIsRun = true;
     // Loop for the turns
     for(currentTurn=0; currentTurn< this->seaSimulation->getSimulationTurns() ; currentTurn++)
     {
+
         turnStartingSharksNumber = 0;
         turnStartingFishesNumber = 0;
         // Recuperation of all the sharks and all the fishes
@@ -102,7 +105,7 @@ void Simulation::runSimulation()
 
 
         // Statistics we save the number of sharks and the number of fishes for each turn
-        statisticFile.addTurn(turnStartingSharksNumber, turnStartingFishesNumber);
+        m_stat->addTurn(turnStartingSharksNumber, turnStartingFishesNumber);
 
 
         // If there is no more animals we stop the simulation
@@ -111,6 +114,8 @@ void Simulation::runSimulation()
             qDebug() << "No more animals, simulation stopped at turn "<<currentTurn ;
             break ;
         }
+        QThread::msleep(1000);
     }
+     m_simuIsRun = false;
     qDebug() << "End Simulation" ;
 }

@@ -99,13 +99,13 @@ private:
     QGraphicsView *m_viewG;
     QGraphicsGridLayout *m_gridLayoutG;
 
-
     int m_rowSize;
     int m_columnSize;
-
     bool m_launched;
-
+    QMdiArea *m_mdi;
     QTimer *m_timeRefresh;
+
+    bool m_simulIsLaunch();
 
 private slots:
 
