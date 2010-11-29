@@ -25,7 +25,7 @@ protected:
     unsigned int posY;
 
     int life;
-    unsigned int reproduction;
+    int reproduction;
 
     virtual int MaxLife() = 0;
     virtual int MatureTime() = 0;

@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     animal.cpp \
     optionwindow.cpp \
     simulation.cpp \
-    qmylabel.cpp
+    qmylabel.cpp \
+    statistic.cpp
 HEADERS += mainwindow.h \
     animal.h \
     shark.h \
@@ -24,7 +25,8 @@ HEADERS += mainwindow.h \
     optionwindow.h \
     simulation.h \
     animals.h \
-    qmylabel.h
+    qmylabel.h \
+    statistic.h
 FORMS += mainwindow.ui \
     options.ui
 RESOURCES += ressources.qrc
