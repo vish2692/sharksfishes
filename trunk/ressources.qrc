@@ -5,5 +5,9 @@
         <file>background.png</file>
         <file>fish.png</file>
         <file>shark.png</file>
+        <file>stats.png</file>
+        <file>stat_button.png</file>
+        <file>preferences.png</file>
+        <file>run.png</file>
     </qresource>
 </RCC>
