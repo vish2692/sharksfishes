@@ -78,6 +78,7 @@ void Sea::Clean() {
 }
 
 void Sea::Move(Animal *animal, int x, int y) {
+    qDebug() << "move "<<x<<" "<<y;
     this->Set(animal->getX(), animal->getY(), NULL);
     int posX = (x < 0 ? this->width + x : (x >= this->width ? x % this->width : x));
     int posY = (y < 0 ? this->height + y : (y >= this->height ? y % this->height: y));
