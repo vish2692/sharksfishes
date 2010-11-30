@@ -37,6 +37,10 @@ public:
     inline int getNbTurnBeforeDecaySharks(){return m_nbTurnBeforeDecaySharks;}
     inline int getNbTurnBeforeDecayFishes(){return m_nbTurnBeforeDecayFishes;}
     inline int getNbTurnBeforeStarvationSharks(){return m_nbTurnBeforeStarvationSharks;}
+    inline int getNbTurnBabyTimeFish(){return m_nbTurnBabyTimeFish;}
+    inline int getNbTurnBabyTimeShark(){return m_nbTurnBabyTimeShark;}
+    inline int getDisplayRefresh(){return m_displayRefresh;}
+    inline int getTurnTime(){return m_turnTime;}
 
     void setFishPos(int x, int y);
     void setSharkPos(int x, int y);
@@ -58,6 +62,10 @@ public slots:
     inline void setNbTurnBeforeDecaySharks(int p_val){m_nbTurnBeforeDecaySharks = p_val;}
     inline void setNbTurnBeforeDecayFishes(int p_val){m_nbTurnBeforeDecayFishes = p_val;}
     inline void setNbTurnBeforeStarvationSharks(int p_val){m_nbTurnBeforeStarvationSharks = p_val;}
+    inline void setNbTurnBabyTimeFish(int p_val){m_nbTurnBabyTimeFish = p_val;}
+    inline void setNbTurnBabyTimeShark(int p_val){m_nbTurnBabyTimeShark = p_val;}
+    inline void setDisplayRefresh(int p_val){m_displayRefresh = p_val;}
+    inline void setTurnTime(int p_val){m_turnTime = p_val;}
 
     void updateGrid();
     void launchStat();
@@ -86,6 +94,10 @@ private:
     int m_nbTurnBeforeDecaySharks;
     int m_nbTurnBeforeDecayFishes;
     int m_nbTurnBeforeStarvationSharks;
+    int m_nbTurnBabyTimeFish;
+    int m_nbTurnBabyTimeShark;
+    int m_displayRefresh;
+    int m_turnTime;
 
     QPixmap *m_fishPix;
     QPixmap *m_sharkPix;
@@ -106,6 +118,9 @@ private:
     bool m_launched;
     QMdiArea *m_mdi;
     QTimer *m_timeRefresh;
+    QMovie *m_movie;
+    QLabel *m_progressLabel;
+    bool m_alreadyStat;
 
     bool m_simulIsLaunch();
 
