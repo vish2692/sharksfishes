@@ -9,5 +9,6 @@
         <file>stat_button.png</file>
         <file>preferences.png</file>
         <file>run.png</file>
+        <file>progress.gif</file>
     </qresource>
 </RCC>
