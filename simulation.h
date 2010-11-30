@@ -16,10 +16,12 @@ public:
     inline statistic * GetStat(){return m_stat;}
     inline void SetStat(statistic * p_stat){m_stat = p_stat;}
     inline bool GetSimuState(){return m_simuIsRun;}
+    inline unsigned int GetTurnAtTheEnd(){return turnAtTheEnd;}
 
 private:
     statistic *m_stat;
     bool m_simuIsRun;
+    unsigned int turnAtTheEnd ;
 };
 
 #endif // SIMULATION_H

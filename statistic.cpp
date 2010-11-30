@@ -26,6 +26,7 @@ void statistic::addTurn(unsigned int sharksNumber, unsigned int fishesNumber)
 double* statistic::getFishes()
 {
     double fishesCount[this->simulationTurns];
+    memset(fishesCount, 0, this->simulationTurns);
     this->stats->close();
     if (!this->stats->open(QIODevice::ReadOnly)) {
         qDebug() << "The statistic file could not be open.";
@@ -62,7 +63,8 @@ double* statistic::getFishes()
 double* statistic::getSharks()
 {
     double sharksCount[this->simulationTurns];
-
+    memset(sharksCount, 0, this->simulationTurns);
+    
     this->stats->close();
     if (!this->stats->open(QIODevice::ReadOnly)) {
         qDebug() << "The statistic file could not be open.";

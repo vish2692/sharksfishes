@@ -1,4 +1,5 @@
 #include "rand.h"
+#include <QDebug>
 
 Rand::Rand()
 {
@@ -7,7 +8,7 @@ Rand::Rand()
 
 int Rand::next(int max) {
     if(max < 1) return 0 ;
-    return rand() % max;
+    return  rand() % max;
 }
 
 int Rand::next(int min, int max) {
