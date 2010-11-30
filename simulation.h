@@ -10,7 +10,7 @@ class Simulation : public QThread
 private :
     Sea * seaSimulation ;
 public:
-    Simulation(Sea * seaSimulation);
+    Simulation(Sea * seaSimulation, int p_refreshTime);
     virtual void run();
     void runSimulation();
     inline statistic * GetStat(){return m_stat;}
@@ -22,6 +22,7 @@ private:
     statistic *m_stat;
     bool m_simuIsRun;
     unsigned int turnAtTheEnd ;
+    int m_refreshTime;
 };
 
 #endif // SIMULATION_H

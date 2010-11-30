@@ -5,7 +5,8 @@
 #include "simulation.h"
 #include "fish.h"
 #include "shark.h"
-#include ".\qwt\qwt_plot_curve.h"
+#include "./qwt/qwt_plot_curve.h"
+#include "./qwt/qwt_legend_item.h"
 #include <QDebug>
 
 
@@ -59,18 +60,22 @@ MainWindow::MainWindow(QWidget *parent) :
     show();
     setGeometry((QApplication::desktop()->screenGeometry().width()/2 - width()/2), (QApplication::desktop()->screenGeometry().height()/2 -                       height()/2), width(), height());
 
-    m_gridWidth = 20;
-    m_gridHeight = 20;
-    m_nbTurn = 10;
+    m_gridWidth = 10;
+    m_gridHeight = 10;
+    m_nbTurn = 1000;
     m_nbStartSharks = 20;
     m_nbStartFishes = 50;
-    m_nbMaxLifeSharks = 40;
-    m_nbMaxLifeFishes = 40;
-    m_nbTurnBetweenProcSharks = 4;
-    m_nbTurnBetweenProcFishes = 4;
-    m_nbTurnBeforeDecaySharks = 2;
-    m_nbTurnBeforeDecayFishes = 2;
-    m_nbTurnBeforeStarvationSharks = 10;
+    m_nbMaxLifeSharks = 100;
+    m_nbMaxLifeFishes = 100;
+    m_nbTurnBetweenProcSharks = 30;
+    m_nbTurnBetweenProcFishes = 30;
+    m_nbTurnBeforeDecaySharks = 5;
+    m_nbTurnBeforeDecayFishes = 5;
+    m_nbTurnBeforeStarvationSharks = 30;
+    m_nbTurnBabyTimeFish = 10;
+    m_nbTurnBabyTimeShark = 10;
+    m_turnTime = 100;
+    m_displayRefresh = 500;
 
     m_sceneG = new QGraphicsScene(this);
     m_viewG = new QGraphicsView();
@@ -80,12 +85,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_gridLayoutG->setVerticalSpacing(0);
     m_mdi = new QMdiArea(this);
     m_mdi->setViewMode(QMdiArea::TabbedView);
-    QMdiSubWindow *subSimu = new QMdiSubWindow(this);
-    subSimu->setWindowTitle("Simulation");
-    subSimu->setAttribute(Qt::WA_DeleteOnClose);
-    subSimu->setWidget(m_viewG);
-    m_mdi->addSubWindow(subSimu);
-    subSimu->setWindowState(Qt::WindowMaximized);
 
 
     setCentralWidget(m_mdi);
@@ -99,40 +98,46 @@ MainWindow::MainWindow(QWidget *parent) :
     *m_sharkPix = m_sharkPix_original->scaled(m_rowSize,m_columnSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     *m_fishBabyPix = m_fishBabyPix_original->scaled(m_rowSize,m_columnSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     *m_sharkBabyPix = m_sharkBabyPix_original->scaled(m_rowSize,m_columnSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_alreadyStat = false;
 
 
 }
 
 void MainWindow::launchStat()
 {
-    if(m_simulation != NULL && m_simulation->GetSimuState() == false)
+    if(m_simulation != NULL && m_simulation->GetSimuState() == false && m_alreadyStat == false)
     {
-
-        QwtPlot *plot = new QwtPlot(QwtText("Statistic"), this);
-        QwtPlotCurve *curveFish = new QwtPlotCurve("Fish stats");
-        QwtPlotCurve *curveShark = new QwtPlotCurve("Sharks stats");
-        double *x = (double *)malloc(m_nbTurn*sizeof(double));
-        for(int iPos=0; iPos < m_nbTurn; iPos++)
+        QwtPlot *plot = new QwtPlot(QwtText("Population"), this);
+        QwtPlotCurve *curveFish = new QwtPlotCurve("Fishes");
+        QwtPlotCurve *curveShark = new QwtPlotCurve("Sharks");
+        double *x = (double *)malloc(m_simulation->GetTurnAtTheEnd()*sizeof(double));
+        for(int iPos=0; iPos < m_simulation->GetTurnAtTheEnd(); iPos++)
         {
             x[iPos]=(double)iPos;
         }
-        QwtPointArrayData *dataF = new QwtPointArrayData(x, m_simulation->GetStat()->getFishes(),m_nbTurn);
-        QwtPointArrayData *dataS = new QwtPointArrayData(x, m_simulation->GetStat()->getSharks(),m_nbTurn);
+        QwtPointArrayData *dataF = new QwtPointArrayData(x, m_simulation->GetStat()->getFishes(),m_simulation->GetTurnAtTheEnd());
+        QwtPointArrayData *dataS = new QwtPointArrayData(x, m_simulation->GetStat()->getSharks(),m_simulation->GetTurnAtTheEnd());
         curveFish->setData(dataF);
         curveFish->attach(plot);
-        curveFish->setPen(QPen(QColor(Qt::green)));
+        curveFish->setPen(QPen(QColor(255,153,0)));
         curveFish->setRenderHint(QwtPlotItem::RenderAntialiased);
         curveShark->setData(dataS);
-        curveShark->setPen(QPen(QColor(Qt::blue)));
+        curveShark->setPen(QPen(QColor(126,126,126)));
         curveShark->setRenderHint(QwtPlotItem::RenderAntialiased);
         curveShark->attach(plot);
+        plot->setAxisTitle(2,"Nb Turns");
+        plot->setAxisTitle(0,"Number of");
+        QwtLegend *legend = new QwtLegend();
+        plot->insertLegend(legend,QwtPlot::BottomLegend);
         QMdiSubWindow *subStat = new QMdiSubWindow(this);
         subStat->setWidget(plot);
         subStat->setAttribute(Qt::WA_DeleteOnClose);
         m_mdi->addSubWindow(subStat);
         subStat->setWindowTitle("Statistics");
         subStat->show();
+        m_alreadyStat = true;
     }
+
 }
 
 MainWindow::~MainWindow()
@@ -183,14 +188,26 @@ void MainWindow::startAnim()
 {
     /*Set a background image.*/
     //setStyleSheet("QMainWindow{background-image: url(:/images/background.png)}");
+    QMdiSubWindow *subSimu = new QMdiSubWindow(this);
+    subSimu->setWindowTitle("Simulation");
+    subSimu->setAttribute(Qt::WA_DeleteOnClose);
+    subSimu->setWidget(m_viewG);
+    m_mdi->addSubWindow(subSimu);
+    subSimu->setWindowState(Qt::WindowMaximized);
+    m_progressLabel = new QLabel(subSimu);
+    m_movie = new QMovie(subSimu);
+    m_movie->setFileName(":/images/progress.gif");
+    //movie->set
+    m_progressLabel->setMovie(m_movie);
+    m_progressLabel->show();
+    m_progressLabel->setGeometry(3,3,60,60);
+    m_movie->start();
 
     /*Create the sea object.*/
-    Fish::InitVars(m_nbMaxLifeFishes, m_nbTurnBetweenProcFishes, m_nbTurnBeforeDecayFishes, 10);
-    Shark::InitVars(m_nbMaxLifeSharks, m_nbTurnBetweenProcSharks, m_nbTurnBeforeDecaySharks, 10, m_nbTurnBeforeStarvationSharks);
+    Fish::InitVars(m_nbMaxLifeFishes, m_nbTurnBetweenProcFishes, m_nbTurnBeforeDecayFishes, m_nbTurnBabyTimeFish);
+    Shark::InitVars(m_nbMaxLifeSharks, m_nbTurnBetweenProcSharks, m_nbTurnBeforeDecaySharks, m_nbTurnBabyTimeShark, m_nbTurnBeforeStarvationSharks);
 
     actualSea = new Sea(m_gridWidth, m_gridHeight, m_nbTurn, m_nbStartFishes, m_nbStartSharks);
-    actualSea->Init();
-    actualSea->Populate();
 
     /*initialise our grid layout, depends on the options that the user made.*/
     listImage = QVector<QVector<QMyLabel *> >(m_gridWidth);
@@ -253,9 +270,9 @@ void MainWindow::startAnim()
     }
 
     //Now run the simulation.
-    m_simulation = new Simulation(actualSea);
+    m_simulation = new Simulation(actualSea, m_turnTime);
     m_timeRefresh = new QTimer(this);
-    m_timeRefresh->setInterval(1000);
+    m_timeRefresh->setInterval(m_displayRefresh);
     connect(m_timeRefresh, SIGNAL(timeout()), this, SLOT(updateGrid()));
     m_simulation->start();
     m_timeRefresh->start();
@@ -285,11 +302,33 @@ void MainWindow::updateGrid()
             }
         }
     }
+    else
+    {
+        for(int iWidthPos = 0; iWidthPos < m_gridWidth; iWidthPos++)
+        {
+            for(int iHeightPos = 0; iHeightPos < m_gridHeight; iHeightPos++)
+            {
+                Animal *localAnimal = actualSea->Get(iWidthPos, iHeightPos);
+                if(localAnimal == NULL)  //Nothing to display
+                {
+                    setNothingPos(iWidthPos,iHeightPos);
+                }
+                else if(localAnimal->GetType() == SHARK)
+                {
+                    setSharkPos(iWidthPos,iHeightPos);
+                }
+                else if(localAnimal->GetType() == FISH)
+                {
+                    setFishPos(iWidthPos,iHeightPos);
+                }
+            }
+        }
+        m_progressLabel->clear();
+    }
 }
 
 void MainWindow::setNothingPos(int x, int y)
 {
-    //listImage[x][y]->setPixmap(QPixmap());
      listImage[x][y]->clear();
 }
 

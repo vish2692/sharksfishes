@@ -6,11 +6,13 @@
 #include <QDebug>
 #include <QList>
 
-Simulation::Simulation(Sea * seaSimulation)
+Simulation::Simulation(Sea * seaSimulation, int p_refreshTime)
 {
     this->seaSimulation = seaSimulation ;
     m_stat = new statistic(seaSimulation->getSimulationTurns());
     m_simuIsRun = false;
+    turnAtTheEnd = 0;
+    m_refreshTime = p_refreshTime;
 }
 
 void Simulation::run()
@@ -25,6 +27,7 @@ void Simulation::run()
 
 void Simulation::runSimulation()
 {
+    turnAtTheEnd = 0;
     unsigned int currentTurn=0 ;
     unsigned int x=0 ;
     unsigned int y=0 ;
@@ -47,7 +50,7 @@ void Simulation::runSimulation()
     // Loop for the turns
     for(currentTurn=0; currentTurn< this->seaSimulation->getSimulationTurns() ; currentTurn++)
     {
-
+        turnAtTheEnd = currentTurn;
         turnStartingSharksNumber = 0;
         turnStartingFishesNumber = 0;
         // Recuperation of all the sharks and all the fishes
@@ -114,7 +117,7 @@ void Simulation::runSimulation()
             qDebug() << "No more animals, simulation stopped at turn "<<currentTurn ;
             break ;
         }
-        QThread::msleep(100);
+        QThread::msleep(m_refreshTime);
     }
      m_simuIsRun = false;
     qDebug() << "End Simulation" ;

@@ -20,6 +20,11 @@ optionWindow::optionWindow(MainWindow *parent) :
     ui->timeBProc_S->setValue(parW->getNbTurnBetweenProcSharks());
     ui->stN_F->setValue(parW->getStartFishes());
     ui->stN_S->setValue(parW->getStartSharks());
+    ui->smRefresh->setValue(parW->getTurnTime());
+    ui->dispRefresh->setValue(parW->getDisplayRefresh());
+    ui->babyT_F->setValue(parW->getNbTurnBabyTimeFish());
+    ui->babyT_S->setValue(parW->getNbTurnBabyTimeShark());
+
 
 
 }
@@ -37,4 +42,8 @@ void optionWindow::on_buttonBox_accepted()
     parW->setNbTurnBetweenProcSharks(ui->timeBProc_S->value());
     parW->setStartFishes(ui->stN_F->value());
     parW->setStartSharks(ui->stN_S->value());
+    parW->setTurnTime(ui->smRefresh->value());
+    parW->setDisplayRefresh(ui->dispRefresh->value());
+    parW->setNbTurnBabyTimeFish(ui->babyT_F->value());
+    parW->setNbTurnBabyTimeShark(ui->babyT_S->value());
 }
