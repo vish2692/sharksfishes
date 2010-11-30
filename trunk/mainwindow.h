@@ -7,7 +7,7 @@
 #include <QApplication>
 #include "sea.h"
 #include "simulation.h"
-#include ".\qwt\qwt_plot.h"
+#include "./qwt/qwt_plot.h"
 
 namespace Ui {
     class MainWindow;

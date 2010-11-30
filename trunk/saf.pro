@@ -30,5 +30,5 @@ HEADERS += mainwindow.h \
 FORMS += mainwindow.ui \
     options.ui
 RESOURCES += ressources.qrc
-LIBS += -L".\qwt\"
+LIBS += -L"./qwt/"
 LIBS += -lqwt
