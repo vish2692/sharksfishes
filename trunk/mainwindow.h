@@ -7,6 +7,7 @@
 #include <QApplication>
 #include "sea.h"
 #include "simulation.h"
+#include ".\qwt\qwt_plot.h"
 
 namespace Ui {
     class MainWindow;
@@ -59,6 +60,7 @@ public slots:
     inline void setNbTurnBeforeStarvationSharks(int p_val){m_nbTurnBeforeStarvationSharks = p_val;}
 
     void updateGrid();
+    void launchStat();
 
 private:
     Ui::MainWindow *ui;

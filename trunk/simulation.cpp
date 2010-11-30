@@ -114,7 +114,7 @@ void Simulation::runSimulation()
             qDebug() << "No more animals, simulation stopped at turn "<<currentTurn ;
             break ;
         }
-        QThread::msleep(1000);
+        QThread::msleep(100);
     }
      m_simuIsRun = false;
     qDebug() << "End Simulation" ;

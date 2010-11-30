@@ -5,11 +5,13 @@
 #include "simulation.h"
 #include "fish.h"
 #include "shark.h"
+#include ".\qwt\qwt_plot_curve.h"
 #include <QDebug>
+
 
 #include <math.h>
 
-#define HEIGHT_MARGIN 110
+#define HEIGHT_MARGIN 160
 #define WIDTH_MARGIN 50
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -52,13 +54,14 @@ MainWindow::MainWindow(QWidget *parent) :
     /*Connect the startAction menu to our custom slot.*/
     connect(startAnimation,SIGNAL(triggered()),this,SLOT(startAnim()));
     connect(preferences,SIGNAL(triggered()),this,SLOT(showOptions()));
+    connect(goStat, SIGNAL(triggered()),this,SLOT(launchStat()));
 
     show();
     setGeometry((QApplication::desktop()->screenGeometry().width()/2 - width()/2), (QApplication::desktop()->screenGeometry().height()/2 -                       height()/2), width(), height());
 
     m_gridWidth = 20;
     m_gridHeight = 20;
-    m_nbTurn = 100;
+    m_nbTurn = 10;
     m_nbStartSharks = 20;
     m_nbStartFishes = 50;
     m_nbMaxLifeSharks = 40;
@@ -77,9 +80,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_gridLayoutG->setVerticalSpacing(0);
     m_mdi = new QMdiArea(this);
     m_mdi->setViewMode(QMdiArea::TabbedView);
-    QMdiSubWindow *subSimu = m_mdi->addSubWindow(m_viewG);
-    subSimu->setWindowState(Qt::WindowMaximized);
+    QMdiSubWindow *subSimu = new QMdiSubWindow(this);
     subSimu->setWindowTitle("Simulation");
+    subSimu->setAttribute(Qt::WA_DeleteOnClose);
+    subSimu->setWidget(m_viewG);
+    m_mdi->addSubWindow(subSimu);
+    subSimu->setWindowState(Qt::WindowMaximized);
+
 
     setCentralWidget(m_mdi);
 
@@ -94,6 +101,38 @@ MainWindow::MainWindow(QWidget *parent) :
     *m_sharkBabyPix = m_sharkBabyPix_original->scaled(m_rowSize,m_columnSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 
+}
+
+void MainWindow::launchStat()
+{
+    if(m_simulation != NULL && m_simulation->GetSimuState() == false)
+    {
+
+        QwtPlot *plot = new QwtPlot(QwtText("Statistic"), this);
+        QwtPlotCurve *curveFish = new QwtPlotCurve("Fish stats");
+        QwtPlotCurve *curveShark = new QwtPlotCurve("Sharks stats");
+        double *x = (double *)malloc(m_nbTurn*sizeof(double));
+        for(int iPos=0; iPos < m_nbTurn; iPos++)
+        {
+            x[iPos]=(double)iPos;
+        }
+        QwtPointArrayData *dataF = new QwtPointArrayData(x, m_simulation->GetStat()->getFishes(),m_nbTurn);
+        QwtPointArrayData *dataS = new QwtPointArrayData(x, m_simulation->GetStat()->getSharks(),m_nbTurn);
+        curveFish->setData(dataF);
+        curveFish->attach(plot);
+        curveFish->setPen(QPen(QColor(Qt::green)));
+        curveFish->setRenderHint(QwtPlotItem::RenderAntialiased);
+        curveShark->setData(dataS);
+        curveShark->setPen(QPen(QColor(Qt::blue)));
+        curveShark->setRenderHint(QwtPlotItem::RenderAntialiased);
+        curveShark->attach(plot);
+        QMdiSubWindow *subStat = new QMdiSubWindow(this);
+        subStat->setWidget(plot);
+        subStat->setAttribute(Qt::WA_DeleteOnClose);
+        m_mdi->addSubWindow(subStat);
+        subStat->setWindowTitle("Statistics");
+        subStat->show();
+    }
 }
 
 MainWindow::~MainWindow()

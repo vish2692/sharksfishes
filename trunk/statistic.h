@@ -14,8 +14,8 @@ public:
     statistic(unsigned int simulationTurns);
     ~statistic();
     void addTurn(unsigned int sharksNumber, unsigned int fishesNumber);
-    int* getFishes();
-    int* getSharks();
+    double* getFishes();
+    double* getSharks();
 };
 
 #endif // STATISTIC_H
