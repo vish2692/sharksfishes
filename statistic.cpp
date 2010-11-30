@@ -23,9 +23,9 @@ void statistic::addTurn(unsigned int sharksNumber, unsigned int fishesNumber)
     *this->out << sharksNumber << " " << fishesNumber << " " << endl;
 }
 
-int* statistic::getFishes()
+double* statistic::getFishes()
 {
-    int fishesCount[this->simulationTurns];
+    double fishesCount[this->simulationTurns];
     this->stats->close();
     if (!this->stats->open(QIODevice::ReadOnly)) {
         qDebug() << "The statistic file could not be open.";
@@ -48,7 +48,7 @@ int* statistic::getFishes()
         {
             strncpy(charTurnNumber, buf, p - buf + 1);
             intTurnNumber = atoi(charTurnNumber);
-            fishesCount[currentTurn] = intTurnNumber ;
+            fishesCount[currentTurn] = (double)intTurnNumber ;
             currentTurn++ ;
             //qDebug() << intTurnNumber ;
         }
@@ -59,9 +59,9 @@ int* statistic::getFishes()
     return fishesCount ;
 }
 
-int* statistic::getSharks()
+double* statistic::getSharks()
 {
-    int sharksCount[this->simulationTurns];
+    double sharksCount[this->simulationTurns];
 
     this->stats->close();
     if (!this->stats->open(QIODevice::ReadOnly)) {
@@ -90,7 +90,7 @@ int* statistic::getSharks()
                 if(p2 != NULL)
                 strncpy(charTurnNumber, p, p2 - buf + 1);
                 intTurnNumber = atoi(charTurnNumber);
-                sharksCount[currentTurn] = intTurnNumber ;
+                sharksCount[currentTurn] = (double)intTurnNumber ;
                 currentTurn++ ;
                 //qDebug() << intTurnNumber ;
             }
