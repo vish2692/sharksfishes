@@ -124,6 +124,11 @@ private:
 
     bool m_simulIsLaunch();
 
+    bool m_simulAlreadyLaunched;
+    QMdiSubWindow *subSimu;
+    QMdiSubWindow *subStat;
+    QAction *goStat;
+
 private slots:
 
 };
