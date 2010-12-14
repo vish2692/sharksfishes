@@ -28,6 +28,8 @@ void Simulation::run()
 void Simulation::runSimulation()
 {
     turnAtTheEnd = 0;
+    bool stopSimulation = false ;
+
     unsigned int currentTurn=0 ;
     unsigned int x=0 ;
     unsigned int y=0 ;
@@ -111,11 +113,16 @@ void Simulation::runSimulation()
         m_stat->addTurn(turnStartingSharksNumber, turnStartingFishesNumber);
 
 
-        // If there is no more animals we stop the simulation
-        if(currentSharksNumber == 0 && currentFishesNumber == 0 )
+        if(stopSimulation)
         {
             qDebug() << "No more animals, simulation stopped at turn "<<currentTurn ;
             break ;
+        }
+
+        // If there is no more animals we stop the simulation
+        if(currentSharksNumber == 0 || currentFishesNumber == 0 )
+        {
+            stopSimulation = true ;
         }
         QThread::msleep(m_refreshTime);
     }

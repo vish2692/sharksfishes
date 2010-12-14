@@ -20,7 +20,7 @@ statistic::~statistic()
 
 void statistic::addTurn(unsigned int sharksNumber, unsigned int fishesNumber)
 {
-    *this->out << sharksNumber << " " << fishesNumber << " " << endl;
+    *this->out << fishesNumber << " " << sharksNumber << " " << endl;
 }
 
 double* statistic::getFishes()

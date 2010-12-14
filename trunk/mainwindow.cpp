@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    m_simulAlreadyLaunched = false;
     m_launched = false;
     ui->setupUi(this);
     setWindowTitle("Shark and Fishes !");
@@ -32,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     preferences->setIcon(QIcon(":/images/preferences.png"));
     optionMenu->addAction(preferences);
 
-    QAction *goStat = new QAction("Open statistic", this);
+    goStat = new QAction("Open statistic", this);
     goStat->setIcon(QIcon(":/images/stat_button.png"));
     optionMenu->addAction(goStat);
 
@@ -99,45 +100,54 @@ MainWindow::MainWindow(QWidget *parent) :
     *m_fishBabyPix = m_fishBabyPix_original->scaled(m_rowSize,m_columnSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     *m_sharkBabyPix = m_sharkBabyPix_original->scaled(m_rowSize,m_columnSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     m_alreadyStat = false;
-
-
+    goStat->setDisabled(true);
 }
 
 void MainWindow::launchStat()
 {
-    if(m_simulation != NULL && m_simulation->GetSimuState() == false && m_alreadyStat == false)
+
+    QwtPlot *plot = new QwtPlot(QwtText("Population"), this);
+    QwtPlotCurve *curveFish = new QwtPlotCurve("Fishes");
+    QwtPlotCurve *curveShark = new QwtPlotCurve("Sharks");
+    double *x = (double *)malloc(m_simulation->GetTurnAtTheEnd()*sizeof(double));
+    for(int iPos=0; iPos < m_simulation->GetTurnAtTheEnd(); iPos++)
     {
-        QwtPlot *plot = new QwtPlot(QwtText("Population"), this);
-        QwtPlotCurve *curveFish = new QwtPlotCurve("Fishes");
-        QwtPlotCurve *curveShark = new QwtPlotCurve("Sharks");
-        double *x = (double *)malloc(m_simulation->GetTurnAtTheEnd()*sizeof(double));
-        for(int iPos=0; iPos < m_simulation->GetTurnAtTheEnd(); iPos++)
-        {
-            x[iPos]=(double)iPos;
-        }
-        QwtPointArrayData *dataF = new QwtPointArrayData(x, m_simulation->GetStat()->getFishes(),m_simulation->GetTurnAtTheEnd());
-        QwtPointArrayData *dataS = new QwtPointArrayData(x, m_simulation->GetStat()->getSharks(),m_simulation->GetTurnAtTheEnd());
-        curveFish->setData(dataF);
-        curveFish->attach(plot);
-        curveFish->setPen(QPen(QColor(255,153,0)));
-        curveFish->setRenderHint(QwtPlotItem::RenderAntialiased);
-        curveShark->setData(dataS);
-        curveShark->setPen(QPen(QColor(126,126,126)));
-        curveShark->setRenderHint(QwtPlotItem::RenderAntialiased);
-        curveShark->attach(plot);
-        plot->setAxisTitle(2,"Nb Turns");
-        plot->setAxisTitle(0,"Number of");
-        QwtLegend *legend = new QwtLegend();
-        plot->insertLegend(legend,QwtPlot::BottomLegend);
-        QMdiSubWindow *subStat = new QMdiSubWindow(this);
+        x[iPos]=(double)iPos;
+    }
+    QwtPointArrayData *dataF = new QwtPointArrayData(x, m_simulation->GetStat()->getFishes(),m_simulation->GetTurnAtTheEnd());
+    QwtPointArrayData *dataS = new QwtPointArrayData(x, m_simulation->GetStat()->getSharks(),m_simulation->GetTurnAtTheEnd());
+    curveFish->setData(dataF);
+    curveFish->attach(plot);
+    curveFish->setPen(QPen(QColor(255,153,0)));
+    curveFish->setRenderHint(QwtPlotItem::RenderAntialiased);
+    curveShark->setData(dataS);
+    curveShark->setPen(QPen(QColor(126,126,126)));
+    curveShark->setRenderHint(QwtPlotItem::RenderAntialiased);
+    curveShark->attach(plot);
+    plot->setAxisTitle(2,"Nb Turns");
+    plot->setAxisTitle(0,"Number of");
+    QwtLegend *legend = new QwtLegend();
+    plot->insertLegend(legend,QwtPlot::BottomLegend);
+
+    if(m_alreadyStat == false)
+    {
+        subStat = new QMdiSubWindow(this);
         subStat->setWidget(plot);
         subStat->setAttribute(Qt::WA_DeleteOnClose);
         m_mdi->addSubWindow(subStat);
-        subStat->setWindowTitle("Statistics");
-        subStat->show();
-        m_alreadyStat = true;
     }
-
+    else
+    {
+        m_mdi->removeSubWindow(subStat);
+        subStat = new QMdiSubWindow(this);
+        subStat->setWidget(plot);
+        subStat->setAttribute(Qt::WA_DeleteOnClose);
+        m_mdi->addSubWindow(subStat);
+    }
+    subStat->setWindowState(Qt::WindowMaximized);
+    subStat->setWindowTitle("Statistics");
+    subStat->show();
+    m_alreadyStat = true;
 }
 
 MainWindow::~MainWindow()
@@ -186,18 +196,35 @@ void MainWindow::showOptions()
 /*Launch the application.*/
 void MainWindow::startAnim()
 {
+    goStat->setDisabled(true);
+    preferences->setDisabled(true);
     /*Set a background image.*/
-    //setStyleSheet("QMainWindow{background-image: url(:/images/background.png)}");
-    QMdiSubWindow *subSimu = new QMdiSubWindow(this);
-    subSimu->setWindowTitle("Simulation");
-    subSimu->setAttribute(Qt::WA_DeleteOnClose);
-    subSimu->setWidget(m_viewG);
-    m_mdi->addSubWindow(subSimu);
-    subSimu->setWindowState(Qt::WindowMaximized);
+    if(m_simulAlreadyLaunched == false)
+    {
+        subSimu = new QMdiSubWindow(this);
+        subSimu->setWindowTitle("Simulation");
+        subSimu->setAttribute(Qt::WA_DeleteOnClose);
+        subSimu->setWidget(m_viewG);
+        m_mdi->addSubWindow(subSimu);
+        subSimu->setWindowState(Qt::WindowMaximized);
+
+        //movie->set
+
+    }
+    else
+    {
+        m_gridLayoutG = new QGraphicsGridLayout();
+        m_gridLayoutG->setHorizontalSpacing(0);
+        m_gridLayoutG->setVerticalSpacing(0);
+        m_sceneG = new QGraphicsScene(this);
+        m_viewG = new QGraphicsView();
+        m_viewG->setScene(m_sceneG);
+        subSimu->setWidget(m_viewG);
+    }
+
     m_progressLabel = new QLabel(subSimu);
     m_movie = new QMovie(subSimu);
     m_movie->setFileName(":/images/progress.gif");
-    //movie->set
     m_progressLabel->setMovie(m_movie);
     m_progressLabel->show();
     m_progressLabel->setGeometry(3,3,60,60);
@@ -210,17 +237,21 @@ void MainWindow::startAnim()
     actualSea = new Sea(m_gridWidth, m_gridHeight, m_nbTurn, m_nbStartFishes, m_nbStartSharks);
 
     /*initialise our grid layout, depends on the options that the user made.*/
+
     listImage = QVector<QVector<QMyLabel *> >(m_gridWidth);
     for(int iPos = 0; iPos < m_gridWidth; iPos++)
     {
         listImage[iPos] = QVector<QMyLabel *>(m_gridHeight);
         for(int iPos2 = 0; iPos2 < m_gridHeight; iPos2++)
         {
+
             listImage[iPos][iPos2] = new QMyLabel();
+
             listImage[iPos][iPos2]->setFixedWidth(m_columnSize);
             listImage[iPos][iPos2]->setFixedHeight(m_rowSize);
             QGraphicsWidget *localGWidget = m_sceneG->addWidget(listImage[iPos][iPos2]);
             m_gridLayoutG->addItem(localGWidget, iPos, iPos2);
+
             Animal *localAnimal = actualSea->Get(iPos,iPos2);
             if(localAnimal != NULL && localAnimal->GetType() == FISH)
             {
@@ -276,6 +307,8 @@ void MainWindow::startAnim()
     connect(m_timeRefresh, SIGNAL(timeout()), this, SLOT(updateGrid()));
     m_simulation->start();
     m_timeRefresh->start();
+    m_simulAlreadyLaunched = true;
+    startAnimation->setDisabled(true);
 }
 
 void MainWindow::updateGrid()
@@ -324,6 +357,10 @@ void MainWindow::updateGrid()
             }
         }
         m_progressLabel->clear();
+        startAnimation->setDisabled(false);
+        m_timeRefresh->stop();
+        goStat->setDisabled(false);
+        preferences->setDisabled(false);
     }
 }
 
