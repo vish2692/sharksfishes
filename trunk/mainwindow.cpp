@@ -207,9 +207,6 @@ void MainWindow::startAnim()
         subSimu->setWidget(m_viewG);
         m_mdi->addSubWindow(subSimu);
         subSimu->setWindowState(Qt::WindowMaximized);
-
-        //movie->set
-
     }
     else
     {
@@ -361,6 +358,10 @@ void MainWindow::updateGrid()
         m_timeRefresh->stop();
         goStat->setDisabled(false);
         preferences->setDisabled(false);
+        if(m_alreadyStat == true)
+        {
+            launchStat();
+        }
     }
 }
 
